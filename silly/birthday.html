@@ -3,36 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Birthday Date Picker 🎂</title>
+  <title>🎂 Doğum Günü Tahmin Oyunu 🎉</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', sans-serif;
+      background: linear-gradient(135deg, #ffc3a0, #ffafbd);
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
       text-align: center;
-      padding: 50px;
-      background: #fafafa;
     }
+
     h1 {
-      color: #333;
+      font-size: 2.3em;
+      margin-bottom: 0.5em;
+      animation: bounce 1.5s infinite;
     }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    #question {
+      font-size: 1.3em;
+      margin-bottom: 1.2em;
+    }
+
     button {
-      margin: 10px;
-      padding: 10px 20px;
+      background: #ff6fa5;
       border: none;
-      background: #007bff;
       color: white;
-      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 1.1em;
+      border-radius: 25px;
+      margin: 8px;
       cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
     }
+
     button:hover {
-      background: #0056b3;
+      transform: scale(1.1);
+      background: #ff4c85;
+    }
+
+    #cake {
+      font-size: 4em;
+      animation: wiggle 1s infinite ease-in-out;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      75% { transform: rotate(-3deg); }
+    }
+
+    #result {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+
+    #reset {
+      background: #74d680;
+    }
+
+    #reset:hover {
+      background: #57c45a;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: randomColor();
+      top: 0;
+      animation: fall 3s linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <h1>This is a date picker, specifically for birthdays 🎂</h1>
-  <p>Example page — hosted on <b>forexign.github.io/silly/birthday.html</b></p>
-  <button>I am older than that</button>
-  <button>I am younger than that</button>
-  <button>Undo</button>
+  <h1>🎂 Doğum Günü Tahmincisi 🎈</h1>
+  <div id="cake">🍰</div>
+  <p id="question">Doğum gününü tahmin edeceğim... ama sen bana yardım et!</p>
+
+  <div id="buttons">
+    <button onclick="older()">Daha Büyüküm 😎</button>
+    <button onclick="younger()">Daha Küçüğüm 🐣</button>
+    <button onclick="reset()">Yeniden Başla 🔄</button>
+  </div>
+
+  <p id="result"></p>
+
+  <script>
+    let year = 2000;
+    let step = 10;
+
+    const question = document.getElementById("question");
+    const result = document.getElementById("result");
+
+    function older() {
+      year -= step;
+      step = Math.max(1, step - 2);
+      ask();
+    }
+
+    function younger() {
+      year += step;
+      step = Math.max(1, step - 2);
+      ask();
+    }
+
+    function ask() {
+      if (step <= 1) {
+        celebrate(`🎉 Tahminim: ${year}! 🎂`);
+      } else {
+        question.textContent = `Hmm... ${year} civarı mı doğdun?`;
+        result.textContent = "";
+      }
+    }
+
+    function celebrate(msg) {
+      question.textContent = msg;
+      result.textContent = "Yaşasın! 🎊 Şimdi pastayı üfle!";
+      spawnConfetti(80);
+    }
+
+    function spawnConfetti(amount) {
+      for (let i = 0; i < amount; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confetti.style.animationDuration = (2 + Math.random() * 3) + "s";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function reset() {
+      year = 2000;
+      step = 10;
+      question.textContent = "Doğum gününü tahmin edeceğim... ama sen bana yardım et!";
+      result.textContent = "";
+    }
+  </script>
 </body>
 </html>
