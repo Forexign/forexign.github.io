@@ -1,176 +1,125 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎂 Doğum Günü Tahmin Oyunu 🎉</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doğum Gününü Tahmin Edeceğim 🎂</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Comic Sans MS', sans-serif;
-      background: linear-gradient(135deg, #ffb6c1, #ffd1dc);
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      background: linear-gradient(180deg, #ffe3ec, #fff7f0);
       text-align: center;
-      overflow: hidden;
+      padding: 50px;
+      transition: background 0.5s;
     }
-
     h1 {
-      font-size: 2.4em;
-      animation: float 2s ease-in-out infinite;
+      color: #ff4f8b;
     }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+    p {
+      color: #333;
+      font-size: 18px;
     }
-
-    #cake {
-      font-size: 4em;
-      animation: wiggle 1s infinite ease-in-out;
-    }
-
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(3deg); }
-      75% { transform: rotate(-3deg); }
-    }
-
-    #question {
-      font-size: 1.3em;
-      margin-top: 10px;
-    }
-
     button {
-      background: #ff6fa5;
+      margin: 10px;
+      padding: 10px 20px;
       border: none;
+      border-radius: 12px;
+      background: #ff4f8b;
       color: white;
-      padding: 10px 22px;
-      font-size: 1.1em;
-      border-radius: 25px;
-      margin: 8px;
+      font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
+      transition: 0.2s;
     }
-
     button:hover {
-      transform: scale(1.1);
-      background: #ff4c85;
+      background: #ff81ac;
+      transform: scale(1.05);
     }
-
-    #reset {
-      background: #74d680;
-    }
-    #reset:hover {
-      background: #57c45a;
-    }
-
     #result {
-      margin-top: 20px;
-      font-size: 1.2em;
+      font-size: 22px;
+      color: #222;
+      margin-top: 30px;
     }
-
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      top: 0;
-      animation: fall 3s linear infinite;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>🎂 Doğum Günü Tahmincisi 🎈</h1>
-  <div id="cake">🍰</div>
-  <p id="question">Hazırım! Doğum yılını tahmin edeceğim...</p>
-
-  <div id="buttons">
-    <button onclick="older()">Daha Büyüküm 😎</button>
-    <button onclick="younger()">Daha Küçüğüm 🐣</button>
-    <button id="reset" onclick="reset()">Yeniden Başla 🔄</button>
+  <h1>🎂 Doğum Gününü Tahmin Edeceğim!</h1>
+  <p>Yılını tahmin ediyorum, ama sen bana yardım et 😉</p>
+  <div id="game">
+    <h2 id="guess">2000 mi doğdun?</h2>
+    <button id="older">Daha yaşlıyım 👴</button>
+    <button id="younger">Daha gencim 👶</button>
+    <button id="correct" class="hidden">🎂 Doğru bildin!</button>
+    <button id="restart" class="hidden">🔁 Baştan oyna</button>
   </div>
-
-  <p id="result"></p>
+  <div id="result"></div>
 
   <script>
-    let min = 1950;
-    let max = 2025;
-    let guess = randomYear();
+    let min = 1970;
+    let max = new Date().getFullYear();
+    let guess = Math.floor((min + max) / 2);
 
-    const question = document.getElementById("question");
+    const guessEl = document.getElementById("guess");
+    const olderBtn = document.getElementById("older");
+    const youngerBtn = document.getElementById("younger");
+    const correctBtn = document.getElementById("correct");
+    const restartBtn = document.getElementById("restart");
     const result = document.getElementById("result");
 
-    function randomYear() {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    function updateGuess() {
+      guessEl.textContent = guess + " mi doğdun?";
     }
 
-    function updateQuestion() {
-      question.textContent = `Tahminim: ${guess} 🎯`;
-    }
-
-    function older() {
-      max = guess - 1;
-      nextGuess();
-    }
-
-    function younger() {
-      min = guess + 1;
-      nextGuess();
-    }
-
-    function nextGuess() {
-      if (min > max) {
-        celebrate("Bu imkânsız! 😵‍💫");
-        return;
+    function checkEnd() {
+      if (max - min <= 1) {
+        showCorrect();
       }
+    }
+
+    function showCorrect() {
+      guessEl.textContent = "🎉 " + guess + " doğumluymuşsun!";
+      olderBtn.classList.add("hidden");
+      youngerBtn.classList.add("hidden");
+      correctBtn.classList.remove("hidden");
+    }
+
+    olderBtn.addEventListener("click", () => {
+      max = guess;
       guess = Math.floor((min + max) / 2);
-      if (max - min <= 0) {
-        celebrate(`Buldum! 🎉 ${guess} doğumlusun! 🥳`);
-      } else {
-        updateQuestion();
-      }
-    }
+      updateGuess();
+      checkEnd();
+    });
 
-    function celebrate(msg) {
-      question.textContent = msg;
-      result.textContent = "Yaşasın! 🎊 Şimdi pastayı üfle!";
-      spawnConfetti(80);
-    }
+    youngerBtn.addEventListener("click", () => {
+      min = guess;
+      guess = Math.floor((min + max) / 2);
+      updateGuess();
+      checkEnd();
+    });
 
-    function spawnConfetti(amount) {
-      for (let i = 0; i < amount; i++) {
-        const confetti = document.createElement("div");
-        confetti.classList.add("confetti");
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
-        confetti.style.animationDuration = (2 + Math.random() * 3) + "s";
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 3000);
-      }
-    }
+    correctBtn.addEventListener("click", () => {
+      result.textContent = "🎂 Doğru tahmin ettim! Harikayım 😎";
+      correctBtn.classList.add("hidden");
+      restartBtn.classList.remove("hidden");
+      document.body.style.background = "linear-gradient(180deg, #d4f8e8, #f0fff4)";
+    });
 
-    function reset() {
-      min = 1950;
-      max = 2025;
-      guess = randomYear();
-      question.textContent = "Hazırım! Doğum yılını tahmin edeceğim...";
+    restartBtn.addEventListener("click", () => {
+      min = 1970;
+      max = new Date().getFullYear();
+      guess = Math.floor((min + max) / 2);
+      updateGuess();
       result.textContent = "";
-      setTimeout(updateQuestion, 1000);
-    }
+      olderBtn.classList.remove("hidden");
+      youngerBtn.classList.remove("hidden");
+      correctBtn.classList.add("hidden");
+      restartBtn.classList.add("hidden");
+      document.body.style.background = "linear-gradient(180deg, #ffe3ec, #fff7f0)";
+    });
 
-    // Başlangıç tahmini
-    setTimeout(updateQuestion, 1000);
+    updateGuess();
   </script>
 </body>
 </html>
